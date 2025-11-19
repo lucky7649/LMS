@@ -9,6 +9,7 @@ import {
   getCreatorCourses,
   getLectureById,
   getSingleCourse,
+  removeCourse,
   removeLecture,
   searchCourse, 
   togglePublishCourse,
@@ -23,6 +24,8 @@ router.route("/creator-course").get(isAuthenticated,getCreatorCourses);
 router.route("/").get(getAllCourses);
 router.route("/search").get(isAuthenticated,searchCourse);
 router.route("/:courseId").get(isAuthenticated,getSingleCourse);
+router.route("/:courseId").delete(isAuthenticated, removeCourse);
+
 // for lectures routes
 router.route("/:courseId/lectures").get(isAuthenticated,getCourseLectures);
 router.route("/:courseId/lecture").post(isAuthenticated, createLecture);

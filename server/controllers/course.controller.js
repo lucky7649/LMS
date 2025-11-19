@@ -231,7 +231,7 @@ export const getCourseLectures = async (req, res) => {
       path: "lectures",
     });
 
-    // console.log("Course found:", course);
+    console.log("Course found:", course);
     if (!course) {
       return res.status(404).json({
         success: false,
@@ -301,40 +301,24 @@ export const createLecture = async (req, res) => {
     const { lectureTitle } = req.body;
     const { courseId } = req.params;
 
-    // Validate required fields - IMPROVED VALIDATION
-    if (!lectureTitle || lectureTitle.trim() === "") {
+    // Validate required fields
+    if (!lectureTitle || !courseId) {
       return res.status(400).json({
-        success: false,
         message: "Lecture title is required.",
       });
     }
 
-    if (!courseId) {
-      return res.status(400).json({
-        success: false,
-        message: "Course ID is required.",
-      });
-    }
-
     // Create a new lecture
-    const lecture = await Lecture.create({ lectureTitle: lectureTitle.trim() });
+    const lecture = await Lecture.create({ lectureTitle });
 
     // Find the course and push the new lecture's ID
     const course = await Course.findById(courseId);
-    if (!course) {
-      // Clean up the created lecture if course not found
-      await Lecture.findByIdAndDelete(lecture._id);
-      return res.status(404).json({
-        success: false,
-        message: "Course not found.",
-      });
+    if (course) {
+      course.lectures.push(lecture._id);
+      await course.save();
     }
 
-    course.lectures.push(lecture._id);
-    await course.save();
-
     return res.status(201).json({
-      success: true,
       lecture,
       message: "Lecture created successfully.",
     });
@@ -342,7 +326,8 @@ export const createLecture = async (req, res) => {
     console.error("Error creating lecture:", error);
     return res.status(500).json({
       success: false,
-      message: "An error occurred while creating the lecture. Please try again later.",
+      message:
+        "An error occurred while creating the lecture. Please try again later.",
     });
   }
 };
@@ -440,3 +425,51 @@ export const getLectureById = async (req,res) => {
     });
   }
 }
+
+
+export const removeCourse = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    
+    // Find the course
+    const course = await Course.findById(courseId).populate('lectures');
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found",
+      });
+    }
+
+    // Delete course thumbnail from cloudinary if exists
+    if (course.courseThumbnail) {
+      const publicId = course.courseThumbnail.split("/").pop().split(".")[0];
+      await deleteMediaFromCloudinary(publicId);
+    }
+
+    // Delete all lectures associated with the course
+    if (course.lectures && course.lectures.length > 0) {
+      for (const lecture of course.lectures) {
+        // Delete lecture video from cloudinary
+        if (lecture.publicId) {
+          await deleteVideoFromCloudinary(lecture.publicId);
+        }
+        // Delete lecture from database
+        await Lecture.findByIdAndDelete(lecture._id);
+      }
+    }
+
+    // Delete the course itself
+    await Course.findByIdAndDelete(courseId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Course and all associated lectures deleted successfully.",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete course",
+    });
+  }
+};

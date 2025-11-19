@@ -14,6 +14,7 @@ export const courseApi = createApi({
         url: "/", // Modify here if needed
         method: "GET",
       }),
+      providesTags: ["Course"],
     }),
     getSearchedCourses: builder.query({
       query: ({ searchQuery, categories, sortByPrice }) => {
@@ -26,8 +27,7 @@ export const courseApi = createApi({
           queryString += `&categories=${categoriesString}`;
         }
 
-        // Append sortByLevel if available
-        
+        // Append sortByPrice if available
         if (sortByPrice) {
           queryString += `&sortByPrice=${encodeURIComponent(sortByPrice)}`;
         }
@@ -53,6 +53,7 @@ export const courseApi = createApi({
         method: "GET",
         credentials: "include",
       }),
+      providesTags: ["Course"],
     }),
     editCourse: builder.mutation({
       query: ({ id, formData }) => ({
@@ -61,12 +62,21 @@ export const courseApi = createApi({
         body: formData,
         credentials: "include",
       }),
+      invalidatesTags: ["Course"],
     }),
     createCourse: builder.mutation({
       query: (formData) => ({
         url: "/create",
         method: "POST",
         body: formData,
+        credentials: "include",
+      }),
+      invalidatesTags: ["Course"],
+    }),
+    removeCourse: builder.mutation({
+      query: (courseId) => ({
+        url: `/${courseId}`,
+        method: "DELETE",
         credentials: "include",
       }),
       invalidatesTags: ["Course"],
@@ -130,6 +140,7 @@ export const {
   useGetCourseByIdQuery,
   useEditCourseMutation,
   useCreateCourseMutation,
+  useRemoveCourseMutation,
   useGetLectureByIdQuery,
   useCreateLectureMutation,
   useGetLecturesByCourseIdQuery,

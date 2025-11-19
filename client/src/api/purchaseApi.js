@@ -6,13 +6,17 @@ export const purchaseApi = createApi({
   reducerPath: "purchaseApi",
   baseQuery: fetchBaseQuery({ baseUrl: COURSE_PURCHASE_API }),
   endpoints: (builder) => ({
-    createCheckOutSession: builder.mutation({
+    purchaseCourse: builder.mutation({
       query: (courseId) => ({
-        url: "/checkout/create-checkout-session",
+        url: "/course",
         method: "POST",
         body: courseId,
         credentials: "include",
       }),
+      invalidatesTags: (result, error, arg) => [
+        "PurchasedCourses",
+        { type: "CourseStatus", id: arg.courseId },
+      ],
     }),
     getCourseDetailsWithStatus: builder.query({
       query: (courseId) => ({
@@ -20,6 +24,9 @@ export const purchaseApi = createApi({
         method: "GET",
         credentials: "include",
       }),
+      providesTags: (result, error, courseId) => [
+        { type: "CourseStatus", id: courseId },
+      ],
     }),
     getPurchasedCourses: builder.query({
       query: () => ({
@@ -27,11 +34,14 @@ export const purchaseApi = createApi({
         method: "GET",
         credentials: "include",
       }),
+      providesTags: ["PurchasedCourses"],
     }),
   }),
+  tagTypes: ["PurchasedCourses", "CourseStatus"],
 });
+
 export const {
-  useCreateCheckOutSessionMutation,
+  usePurchaseCourseMutation,
   useGetCourseDetailsWithStatusQuery,
   useGetPurchasedCoursesQuery,
 } = purchaseApi;

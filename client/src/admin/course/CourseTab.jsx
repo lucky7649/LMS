@@ -26,12 +26,14 @@ import {
   useEditCourseMutation,
   useGetCourseByIdQuery,
   usePublishCourseMutation,
+  useRemoveCourseMutation,
 } from "@/api/courseApi";
 
 const BasicCourseTab = ({ courseId }) => {
   const { data: courseData, refetch } = useGetCourseByIdQuery(courseId,{refetchOnMountOrArgChange:true});
   const [editCourse, { data, error, isLoading, isSuccess }] = useEditCourseMutation();
   const [publishCourse] = usePublishCourseMutation();
+  const [removeCourse, { isLoading: isRemoving }] = useRemoveCourseMutation(); // Add this
   const [prevThumbnail, setPrevThumbnail] = useState(null);
   const course = courseData?.course;
 
@@ -69,6 +71,20 @@ const BasicCourseTab = ({ courseId }) => {
 
   const handleSelectChange = (name) => (value) => {
     setInput((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleRemoveCourse = async () => {
+    if (window.confirm("Are you sure you want to delete this course? This action cannot be undone.")) {
+      try {
+        const response = await removeCourse(courseId);
+        if (response.data) {
+          toast.success(response.data.message || "Course deleted successfully.");
+          navigate("/admin/course");
+        }
+      } catch (error) {
+        toast.error("Failed to delete the course.");
+      }
+    }
   };
 
   const selectThumbnail = (e) => {
@@ -134,8 +150,19 @@ const BasicCourseTab = ({ courseId }) => {
               "Publish"
             )}
           </Button>
-          <Button>Remove Course</Button>
-        </div>
+<Button 
+            variant="destructive" 
+            onClick={handleRemoveCourse}
+            disabled={isRemoving}
+          >
+            {isRemoving ? (
+              <>
+                <Loader2 className="mr-2 w-4 h-4 animate-spin" /> Deleting...
+              </>
+            ) : (
+              "Remove Course"
+            )}
+          </Button>        </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-4 mt-5">

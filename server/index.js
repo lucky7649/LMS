@@ -9,7 +9,7 @@ import mediaRoute from "./routes/media.route.js";
 import purchaseRoute from "./routes/coursePurchase.route.js";
 import courseProgress from "./routes/courseprogress.route.js";
 import path from "path"
-
+import morgan from "morgan";
 
 dotenv.config();
 const app = express();
@@ -17,7 +17,13 @@ const PORT = process.env.PORT || 3000;
 
 const DIRNAME = path.resolve();
 
+// app.use(
+//   "/api/v1/purchase/webhook",
+//   express.raw({ type: "application/json" })
+// );
+
 // default middleware
+app.use(morgan("dev"));
 app.use(express.json());
 app.use(cookieParser());
 app.use(

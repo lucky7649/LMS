@@ -25,11 +25,18 @@ const Dashboard = () => {
     return <h1 className="text-gray-500">No purchased courses found.</h1>;
   }
 
-  // Dynamically create the course data from the fetched purchased courses
-  const courseData = purchasedCourse.map((course) => ({
-    name: course.courseId.courseTitle, // Assuming courseId has the name of the course
-    price: course.courseId.coursePrice, // Assuming courseId has the price of the course
-  }));
+  // Filter out courses with null courseId and create the course data
+  const courseData = purchasedCourse
+    .filter(course => course.courseId !== null) // Filter out null courseId
+    .map((course) => ({
+      name: course.courseId.courseTitle,
+      price: course.courseId.coursePrice,
+    }));
+
+  // If all courseId were null, show a message
+  if (courseData.length === 0) {
+    return <h1 className="text-gray-500">No valid course data available.</h1>;
+  }
 
   // Calculate total revenue and total sales from the fetched data
   const totalRevenue = purchasedCourse.reduce(
@@ -78,18 +85,19 @@ const Dashboard = () => {
               <XAxis
                 dataKey="name"
                 stroke="#6b7280"
-                angle={-30} // Rotated labels for better visibility
+                angle={-30}
                 textAnchor="end"
-                interval={0} // Display all labels
+                interval={0}
+                height={80} // Added height to accommodate rotated labels
               />
               <YAxis stroke="#6b7280" />
               <Tooltip formatter={(value, name) => [`₹${value}`, name]} />
               <Line
                 type="monotone"
                 dataKey="price"
-                stroke="#4a90e2" // Changed color to a different shade of blue
+                stroke="#4a90e2"
                 strokeWidth={3}
-                dot={{ stroke: "#4a90e2", strokeWidth: 2 }} // Same color for the dot
+                dot={{ stroke: "#4a90e2", strokeWidth: 2 }}
               />
             </LineChart>
           </ResponsiveContainer>

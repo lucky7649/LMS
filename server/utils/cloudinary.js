@@ -9,23 +9,15 @@ cloudinary.config({
 });
 
 export const uploadMedia = async (file) => {
-  try {
+  try { 
     const uploadResponse = await cloudinary.uploader.upload(file, {
-      resource_type: "video",
-      chunk_size: 6 * 1024 * 1024, // 6MB chunks
-      timeout: 120000,
+      resource_type: "auto",
     });
-
-    return {
-      url: uploadResponse.secure_url,
-      public_id: uploadResponse.public_id,
-    };
+    return uploadResponse;
   } catch (error) {
-    console.log("Upload Error:", error);
-    throw error;
+    console.log(error);
   }
 };
-
 export const deleteMediaFromCloudinary = async (publicId) => {
   try {
     await cloudinary.uploader.destroy(publicId);

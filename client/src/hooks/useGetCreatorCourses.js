@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import { toast } from "sonner";
 
-const COURSE_API="http://localhost:8080/api/v1/course";
+const COURSE_API=" https://lms-u5w9.onrender.com/api/v1/course";
 
 const useGetCreatorCourses = () => {
     const [creatorCourses, setCreatorCourses] = useState([]);

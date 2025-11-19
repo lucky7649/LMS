@@ -38,6 +38,8 @@ app.use(
   })
 );
 
+app.options("*", cors());
+
 // api's
 app.use("/api/v1/media", mediaRoute);
 app.use("/api/v1/user", userRoute);

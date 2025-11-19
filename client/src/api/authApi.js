@@ -1,14 +1,14 @@
 import { userLoggedIn, userLoggedOut } from "@/features/authSlice";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const USER_API = "https://lms-u5w9.onrender.com/api/v1/user";
+const USER_API = "/api/v1/user";
 
 export const authApi = createApi({
   reducerPath: "authApi",
   tagTypes: ["LoadUser"],
   baseQuery: fetchBaseQuery({
     baseUrl: USER_API,
-    credentials: "include",
+    credentials: true,
   }),
   endpoints: (builder) => ({
     registerUser: builder.mutation({

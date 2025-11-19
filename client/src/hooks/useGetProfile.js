@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const USER_API = " https://lms-u5w9.onrender.com/api/v1/user";
+const USER_API = "/api/v1/user";
 
 const useGetProfile = () => {
     const [userProfile, setUserProfile] = useState(null);

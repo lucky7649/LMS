@@ -30,7 +30,8 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://lms-five-swart-45.vercel.app"
+      "https://lms-five-swart-45.vercel.app",
+      "https://lms-1-el7t.onrender.com"  
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],

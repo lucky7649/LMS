@@ -48,10 +48,10 @@ app.use("/api/v1/purchase", purchaseRoute);
 app.use("/api/v1/course-progress", courseProgress);
 
 // serve static files from server
-// app.use(express.static(path.join(DIRNAME,"/client/dist")));
-// app.use("*",(_,res) => {
-//     res.sendFile(path.resolve(DIRNAME, "client","dist","index.html"));
-// })
+app.use(express.static(path.join(DIRNAME,"/client/dist")));
+app.use("*",(_,res) => {
+    res.sendFile(path.resolve(DIRNAME, "client","dist","index.html"));
+})
 
 app.listen(PORT, () => {
   connectDB();

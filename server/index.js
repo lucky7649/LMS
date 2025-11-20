@@ -23,9 +23,9 @@ const DIRNAME = path.resolve();
 // );
 
 // default middleware
+app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(express.json());
-app.use(cookieParser());
 app.use(
   cors({
     origin: true, // dynamic origin; allows same domain requests

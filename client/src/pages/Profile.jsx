@@ -50,9 +50,22 @@ const Profile = () => {
     }
   }, [isSuccess, isError, refetch, data, error]);
 
-  if (profileLoading) return <ProfileSkeleton />;
+ if (profileLoading) return <ProfileSkeleton />;
 
-  const { user } = userProfile;
+// Handle 401 or missing user data
+if (!userProfile || !userProfile.user) {
+  // Redirect to login if not authenticated
+  return (
+    <div className="max-w-4xl mx-auto my-10 px-4 text-center">
+      <h1 className="font-bold text-2xl">Please log in to view your profile</h1>
+      <Button onClick={() => window.location.href = '/login'} className="mt-4">
+        Go to Login
+      </Button>
+    </div>
+  );
+}
+
+const { user } = userProfile;
 
   return (
     <div className="max-w-4xl mx-auto my-10 px-4">

@@ -8,7 +8,7 @@ export const authApi = createApi({
   tagTypes: ["LoadUser"],
   baseQuery: fetchBaseQuery({
     baseUrl: USER_API,
-    credentials: true,
+    credentials: "include",
   }),
   endpoints: (builder) => ({
     registerUser: builder.mutation({
@@ -36,22 +36,26 @@ export const authApi = createApi({
         }
       },
     }),
-    loadUser: builder.query({
-      query: () => ({
-        url: "/profile",
-        method: "GET",
-        credentials: "include",
-      }),
-      providesTags: ["LoadUser"],
-      async onQueryStarted(arg, { queryFulfilled, dispatch }) {
-        try {
-          const result = await queryFulfilled;
-          dispatch(userLoggedIn({ user: result.data.user }));
-        } catch (error) {
-          console.log(error);
-        }
-      },
-    }),
+ loadUser: builder.query({
+  query: () => ({
+    url: "/profile",
+    method: "GET",
+    credentials: "include",
+  }),
+  providesTags: ["LoadUser"],
+  async onQueryStarted(arg, { queryFulfilled, dispatch }) {
+    try {
+      const result = await queryFulfilled;
+      dispatch(userLoggedIn({ user: result.data.user }));
+    } catch (error) {
+      console.log("Load user error:", error);
+      // Clear auth state on 401
+      if (error.error?.status === 401) {
+        dispatch(userLoggedOut());
+      }
+    }
+  },
+}),
     logoutUser: builder.mutation({
       query: () => ({
         url: "/logout",
